@@ -27,33 +27,33 @@ functions:
           path: book/add
           method: post
           cors: true
-  update:
-    handler: books/update.update
-    events:
-      - http:
-          path: book/{bookUuid}/update
-          method: put
-          cors: true
-  delete:
-    handler: books/delete.delete
-    events:
-      - http:
-          path: book/{bookUuid}/delete
-          cors: true
-  get:
-    handler: books/get.getOne
-    events:
-      - http:
-          path: book/{bookUuid}
-          method: getnvm
-          cors: true
-  getAll:
-    handler: books/get.getAll
-    events:
-      - http:
-          path: books
-          method: get
-          cors: true
+#  update:
+#    handler: books/update.update
+#    events:
+#      - http:
+#          path: book/{bookUuid}/update
+#          method: put
+#          cors: true
+#  delete:
+#    handler: books/delete.delete
+#    events:
+#      - http:
+#          path: book/{bookUuid}/delete
+#          cors: true
+#  get:
+#    handler: books/get.getOne
+#    events:
+#      - http:
+#          path: book/{bookUuid}
+#          method: getnvm
+#          cors: true
+#  getAll:
+#    handler: books/get.getAll
+#    events:
+#      - http:
+#          path: books
+#          method: get
+#          cors: true
 
 resources:
   Resources:
