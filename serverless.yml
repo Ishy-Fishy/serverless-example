@@ -78,6 +78,15 @@ resources:
           -
             AttributeName: uuid
             KeyType: HASH
+          -
+            AttributeName: name
+            KeyType: HASH
+          -
+            AttributeName: releaseDate
+            KeyType: RANGE
+          -
+            AttributeName: authorName
+            KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
