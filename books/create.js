@@ -28,6 +28,7 @@ function validate(data) {
 }
 module.exports.create = (event, context) => __awaiter(this, void 0, void 0, function* () {
     // const data = JSON.parse(event.body)
+    console.log(event);
     const data = validate(event.body);
     const params = {
         TableName: process.env.DYNAMODB_TABLE,

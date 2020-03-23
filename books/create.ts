@@ -23,6 +23,7 @@ function validate(data) {
 
 module.exports.create = async (event, context) => {
     // const data = JSON.parse(event.body)
+    console.log(event);
     const data = validate(event.body);
 
     const params = {
