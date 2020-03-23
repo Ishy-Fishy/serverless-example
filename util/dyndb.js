@@ -17,6 +17,22 @@ function putAsync(params) {
     });
 }
 exports.putAsync = putAsync;
+function updateAsync(params) {
+    // write the book to the database
+    return new Promise((resolve, reject) => {
+        dynamoDb.update(params, (error, result) => {
+            // handle potential errors
+            if (error) {
+                console.error(error);
+                let err = new Error('Couldn\'t update the item.');
+                // return reject(err)
+                return reject(error);
+            }
+            resolve(result);
+        });
+    });
+}
+exports.updateAsync = updateAsync;
 function deleteAsync(params) {
     // delete book from the database
     return new Promise((resolve, reject) => {

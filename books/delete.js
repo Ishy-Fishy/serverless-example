@@ -8,24 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const uuid = require("uuid");
 const dyndb_1 = require("../util/dyndb");
-module.exports.create = (event, context) => __awaiter(this, void 0, void 0, function* () {
-    const data = JSON.parse(event.body);
+module.exports.delete = (event, context) => __awaiter(this, void 0, void 0, function* () {
     const params = {
         TableName: process.env.DYNAMODB_TABLE,
-        Item: {
-            uuid: uuid.v1(),
-            name: data.name,
-            releaseDate: data.releaseDate,
-            authorName: data.authorName
+        Key: {
+            uuid: event.pathParameters.bookUuid
         }
     };
-    const result = yield dyndb_1.putAsync(params);
-    // create a response
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify(result.Item)
+    yield dyndb_1.deleteAsync(params);
+    return {
+        statusCode: 200
     };
-    return response;
 });

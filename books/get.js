@@ -19,3 +19,18 @@ module.exports.getAll = (event, context) => __awaiter(this, void 0, void 0, func
     };
     return response;
 });
+module.exports.getOne = (event, context) => __awaiter(this, void 0, void 0, function* () {
+    const params = {
+        TableName: process.env.DYNAMODB_TABLE,
+        Key: {
+            uuid: event.pathParameters.bookUuid
+        }
+    };
+    const result = yield dyndb_1.getAsync(params);
+    // create a response
+    const response = {
+        statusCode: 200,
+        body: JSON.stringify(result)
+    };
+    return response;
+});

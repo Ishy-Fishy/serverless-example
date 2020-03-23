@@ -3,6 +3,9 @@
 import {DynamoDB} from 'aws-sdk'
 import PutParam = DynamoDB.PutParam;
 import ScanParam = DynamoDB.ScanParam;
+import GetParam = DynamoDB.GetParam;
+import DeleteParam = DynamoDB.DeleteParam;
+import UpdateParam = DynamoDB.UpdateParam;
 
 const dynamoDb = new DynamoDB.DocumentClient()
 
@@ -26,7 +29,24 @@ export function putAsync(params: PutParam): Promise<DyndbRetItem> {
     })
 }
 
-export function deleteAsync(params) {
+export function updateAsync(params: UpdateParam): Promise<DyndbRetItem> {
+    // write the book to the database
+    return new Promise((resolve, reject) => {
+        dynamoDb.update(params, (error, result) => {
+                // handle potential errors
+                if (error) {
+                    console.error(error)
+                    let err = new Error('Couldn\'t update the item.')
+                    // return reject(err)
+                    return reject(error)
+                }
+                resolve(result)
+            }
+        )
+    })
+}
+
+export function deleteAsync(params: DeleteParam) {
     // delete book from the database
     return new Promise((resolve, reject) => {
         dynamoDb.delete(params, (error) => {
@@ -42,7 +62,7 @@ export function deleteAsync(params) {
     })
 }
 
-export function getAsync(params) {
+export function getAsync(params: GetParam) {
     // get book by param
     return new Promise((resolve, reject) => {
         dynamoDb.get(params, (error, result) => {

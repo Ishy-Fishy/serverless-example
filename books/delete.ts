@@ -1,28 +1,16 @@
 'use strict'
 
-import * as uuid from 'uuid'
+import {deleteAsync} from "../util/dyndb";
 
-import {putAsync} from "../util/dyndb";
-
-module.exports.create = async (event, context) => {
-    const data = JSON.parse(event.body)
-
+module.exports.delete = async (event, context) => {
     const params = {
         TableName: process.env.DYNAMODB_TABLE,
-        Item: {
-            uuid: uuid.v1(),
-            name: data.name,
-            releaseDate: data.releaseDate,
-            authorName: data.authorName
+        Key: {
+            uuid: event.pathParameters.bookUuid
         }
     }
-
-    const result = await putAsync(params);
-    // create a response
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify(result.Item)
+    await deleteAsync(params);
+    return {
+        statusCode: 200
     }
-    return response
-
 }

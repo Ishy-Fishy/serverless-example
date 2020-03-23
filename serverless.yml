@@ -9,7 +9,7 @@ provider:
   runtime: nodejs12.x
   region: eu-west-2
   environment:
-    DYNAMODB_TABLE: book_table_${self:service}-${opt:stage, self:provider.stage}
+    DYNAMODB_TABLE: app_book_table_${self:service}-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -29,26 +29,27 @@ functions:
           path: book/add
           method: post
           cors: true
-#  update:
-#    handler: books/update.update
-#    events:
-#      - http:
-#          path: book/{bookUuid}/update
-#          method: put
-#          cors: true
-#  delete:
-#    handler: books/delete.delete
-#    events:
-#      - http:
-#          path: book/{bookUuid}/delete
-#          cors: true
-#  get:
-#    handler: books/get.getOne
-#    events:
-#      - http:
-#          path: book/{bookUuid}
-#          method: getnvm
-#          cors: true
+  update:
+    handler: books/update.update
+    events:
+      - http:
+          path: book/{bookUuid}/update
+          method: put
+          cors: true
+  delete:
+    handler: books/delete.delete
+    events:
+      - http:
+          path: book/{bookUuid}/delete
+          method: delete
+          cors: true
+  get:
+    handler: books/get.getOne
+    events:
+      - http:
+          path: book/{bookUuid}
+          method: get
+          cors: true
   getAll:
     handler: books/get.getAll
     events:
@@ -67,16 +68,10 @@ resources:
           -
             AttributeName: uuid
             AttributeType: S
-          -
-            AttributeName: name
-            AttributeType: S
         KeySchema:
           -
             AttributeName: uuid
             KeyType: HASH
-          -
-            AttributeName: name
-            KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
