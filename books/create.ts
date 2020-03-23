@@ -10,7 +10,7 @@ function validate(data) {
         console.error('Name Validation Failed')
         throw new Error('Invalid Name.')
     }
-    if (typeof data.releaseDate !== 'number') {
+    if (Number.isNaN(Date.parse(data.releaseDate))) {
         console.error('Validation Failed')
         throw new Error('Couldn\'t create the book item.')
     }
@@ -18,17 +18,19 @@ function validate(data) {
         console.error('Validation Failed')
         throw new Error('Couldn\'t create the book item.')
     }
+    return data;
 }
 
 module.exports.create = async (event, context) => {
-    const data = JSON.parse(event.body)
+    // const data = JSON.parse(event.body)
+    const data = validate(event.body);
 
     const params = {
         TableName: process.env.DYNAMODB_TABLE,
         Item: {
             uuid: uuid.v1(),
             name: data.name,
-            releaseDate: data.releaseDate,
+            releaseDate: Date.parse(data.releaseDate),
             authorName: data.authorName
         }
     }
