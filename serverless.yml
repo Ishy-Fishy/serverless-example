@@ -1,0 +1,84 @@
+service: aws-node-typescript-rest-api-with-dynamodb
+
+frameworkVersion: ">=1.1.0 <2.0.0"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-west-2
+  environment:
+    DYNAMODB_TABLE: book_table_${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
+functions:
+  create:
+    handler: books/create.create
+    events:
+      - http:
+          path: book/add
+          method: post
+          cors: true
+  update:
+    handler: books/update.update
+    events:
+      - http:
+          path: book/{bookUuid}/update
+          method: put
+          cors: true
+  delete:
+    handler: books/delete.delete
+    events:
+      - http:
+          path: book/{bookUuid}/delete
+          cors: true
+  get:
+    handler: books/get.getOne
+    events:
+      - http:
+          path: book/{bookUuid}
+          method: getnvm
+          cors: true
+  getAll:
+    handler: books/get.getAll
+    events:
+      - http:
+          path: books
+          method: get
+          cors: true
+
+resources:
+  Resources:
+    BookTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: uuid
+            AttributeType: S
+          -
+            AttributeName: name
+            AttributeType: S
+          -
+            AttributeName: releaseDate
+            AttributeType: N
+          -
+            AttributeName: authorName
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: uuid
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
