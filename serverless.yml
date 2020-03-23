@@ -1,5 +1,5 @@
 org: konstyantynsemyanystyi
-app: crud
+#app: crud # needs to be kept commented out because of https://github.com/serverless/serverless/issues/6684
 service: aws-node-dyndb-crud
 
 frameworkVersion: ">=1.1.0 <2.0.0"
