@@ -2,6 +2,7 @@
 
 import {DynamoDB} from 'aws-sdk'
 import PutParam = DynamoDB.PutParam;
+import ScanParam = DynamoDB.ScanParam;
 
 const dynamoDb = new DynamoDB.DocumentClient()
 
@@ -32,7 +33,7 @@ export function deleteAsync(params) {
                 // handle potential errors
                 if (error) {
                     console.error(error)
-                    let err = new Error('Couldn\'t create the item.')
+                    let err = new Error('Couldn\'t delete the item.')
                     return reject(err)
                 }
                 resolve()
@@ -48,7 +49,7 @@ export function getAsync(params) {
                 // handle potential errors
                 if (error) {
                     console.error(error)
-                    let err = new Error('Couldn\'t create the item.')
+                    let err = new Error('Couldn\'t get the item.')
                     return reject(err)
                 }
                 resolve(result)
@@ -57,14 +58,14 @@ export function getAsync(params) {
     })
 }
 
-export function listAsync(params) {
+export function listAsync(params: ScanParam) {
     // list all books matching param
     return new Promise((resolve, reject) => {
         dynamoDb.scan(params, (error, result) => {
                 // handle potential errors
                 if (error) {
                     console.error(error)
-                    let err = new Error('Couldn\'t create the item.')
+                    let err = new Error('Couldn\'t get the items.')
                     return reject(err)
                 }
                 resolve(result)

@@ -8,8 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const uuid = require("uuid");
+const dyndb_1 = require("../util/dyndb");
 function validate(data) {
-    const defaultMsg = 'Couldn\'t create the book item.';
     if (typeof data.name !== 'string') {
         console.error('Name Validation Failed');
         throw new Error('Invalid book name.');
@@ -25,26 +26,22 @@ function validate(data) {
     return data;
 }
 module.exports.create = (event, context) => __awaiter(this, void 0, void 0, function* () {
-    throw new Error(`Body: ${JSON.stringify(event.body)}`);
-    // const data = JSON.parse(event.body)
-    // console.log(event);
-    // const data = validate(event.body);
-    // const params = {
-    //     TableName: process.env.DYNAMODB_TABLE,
-    //     Item: {
-    //         uuid: uuid.v1(),
-    //         name: data.name,
-    //         releaseDate: Date.parse(data.releaseDate),
-    //         authorName: data.authorName
-    //     }
-    // }
-    //
-    // const result = await putAsync(params);
-    // // create a response
-    // const response = {
-    //     statusCode: 200,
-    //     body: JSON.stringify(result.Item)
-    // }
-    // return response
-    return "";
+    const parsed = JSON.parse(event.body);
+    const data = validate(parsed);
+    const params = {
+        TableName: process.env.DYNAMODB_TABLE,
+        Item: {
+            uuid: uuid.v1(),
+            name: data.name,
+            releaseDate: Date.parse(data.releaseDate),
+            authorName: data.authorName
+        }
+    };
+    const result = yield dyndb_1.putAsync(params);
+    // create a response
+    const response = {
+        statusCode: 200,
+        body: JSON.stringify(result)
+    };
+    return response;
 });

@@ -49,13 +49,13 @@ functions:
 #          path: book/{bookUuid}
 #          method: getnvm
 #          cors: true
-#  getAll:
-#    handler: books/get.getAll
-#    events:
-#      - http:
-#          path: books
-#          method: get
-#          cors: true
+  getAll:
+    handler: books/get.getAll
+    events:
+      - http:
+          path: books
+          method: get
+          cors: true
 
 resources:
   Resources:

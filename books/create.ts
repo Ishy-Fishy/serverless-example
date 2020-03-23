@@ -5,7 +5,6 @@ import * as uuid from 'uuid'
 import {putAsync} from '../util/dyndb'
 
 function validate(data) {
-    const defaultMsg = 'Couldn\'t create the book item.';
     if (typeof data.name !== 'string') {
         console.error('Name Validation Failed')
         throw new Error('Invalid book name.')
@@ -22,27 +21,24 @@ function validate(data) {
 }
 
 module.exports.create = async (event, context) => {
-    throw new Error(`Body: ${JSON.stringify(event.body)}`);
-    // const data = JSON.parse(event.body)
-    // console.log(event);
-    // const data = validate(event.body);
+    const parsed = JSON.parse(event.body);
+    const data = validate(parsed);
 
-    // const params = {
-    //     TableName: process.env.DYNAMODB_TABLE,
-    //     Item: {
-    //         uuid: uuid.v1(),
-    //         name: data.name,
-    //         releaseDate: Date.parse(data.releaseDate),
-    //         authorName: data.authorName
-    //     }
-    // }
-    //
-    // const result = await putAsync(params);
-    // // create a response
-    // const response = {
-    //     statusCode: 200,
-    //     body: JSON.stringify(result.Item)
-    // }
-    // return response
-    return "";
+    const params = {
+        TableName: process.env.DYNAMODB_TABLE,
+        Item: {
+            uuid: uuid.v1(),
+            name: data.name,
+            releaseDate: Date.parse(data.releaseDate),
+            authorName: data.authorName
+        }
+    }
+
+    const result = await putAsync(params);
+    // create a response
+    const response = {
+        statusCode: 200,
+        body: JSON.stringify(result)
+    }
+    return response
 }

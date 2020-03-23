@@ -24,7 +24,7 @@ function deleteAsync(params) {
             // handle potential errors
             if (error) {
                 console.error(error);
-                let err = new Error('Couldn\'t create the item.');
+                let err = new Error('Couldn\'t delete the item.');
                 return reject(err);
             }
             resolve();
@@ -39,7 +39,7 @@ function getAsync(params) {
             // handle potential errors
             if (error) {
                 console.error(error);
-                let err = new Error('Couldn\'t create the item.');
+                let err = new Error('Couldn\'t get the item.');
                 return reject(err);
             }
             resolve(result);
@@ -54,7 +54,7 @@ function listAsync(params) {
             // handle potential errors
             if (error) {
                 console.error(error);
-                let err = new Error('Couldn\'t create the item.');
+                let err = new Error('Couldn\'t get the items.');
                 return reject(err);
             }
             resolve(result);
