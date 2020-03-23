@@ -78,3 +78,22 @@ function listAsync(params) {
     });
 }
 exports.listAsync = listAsync;
+function generateUpdateParametersFromObject(item) {
+    let expressionString = '';
+    const ExpressionAttributeValues = {};
+    const ExpressionAttributeNames = {};
+    for (let key in item) {
+        if (item[key]) {
+            //obviously ternary operators are bad, but making a dictionary for just one reserved word is overkill
+            expressionString += ` ${key === 'name' ? "#nm" : key} = :${key},`;
+            ExpressionAttributeValues[`:${key}`] = item[key];
+            if (key === 'name') {
+                ExpressionAttributeNames['#nm'] = 'name';
+            }
+        }
+    }
+    //remove trailing comma
+    expressionString = expressionString.replace(/,\s*$/, "");
+    return { expressionString, attributeValues: ExpressionAttributeValues, attributeNames: ExpressionAttributeNames };
+}
+exports.generateUpdateParametersFromObject = generateUpdateParametersFromObject;

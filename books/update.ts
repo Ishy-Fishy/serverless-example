@@ -1,6 +1,6 @@
 'use strict'
 
-import {updateAsync} from '../util/dyndb'
+import {updateAsync, generateUpdateParametersFromObject} from '../util/dyndb'
 
 function validate(data) {
     if (data.name && typeof data.name !== 'string') {
@@ -27,26 +27,9 @@ module.exports.update = async (event, context) => {
         authorName: data.authorName
     };
 
-    let updateExprVariables = '';
+    const updateParams = generateUpdateParametersFromObject(item);
 
-    const ExpressionAttributeValues = {}
-
-    const ExpressionAttributeNames = {}
-
-    for (let key in item) {
-        if (item[key]) {
-            //obviously ternary operators are bad, but making a dictionary for just one reserved word is overkill
-            updateExprVariables += ` ${key === 'name' ? "#nm" : key} = :${key},`;
-            ExpressionAttributeValues[`:${key}`] = item[key];
-            if (key === 'name') {
-                ExpressionAttributeNames['#nm'] = 'name'
-            }
-        }
-    }
-    //remove trailing comma
-    updateExprVariables = updateExprVariables.replace(/,\s*$/, "");
-
-    if (!updateExprVariables) {
+    if (!updateParams.expressionString) {
         return {
             statusCode: 200
         }
@@ -57,13 +40,11 @@ module.exports.update = async (event, context) => {
             uuid: event.pathParameters.bookUuid
         },
         //its 2020, and DynamoDB updates with interpreted string commands instead of a JSON... Couldn't the sdk at least wrap this ugliness?
-        UpdateExpression: `set ${updateExprVariables}`,
-        ExpressionAttributeValues: ExpressionAttributeValues,
-        ExpressionAttributeNames: ExpressionAttributeNames
+        UpdateExpression: `set ${updateParams.expressionString}`,
+        ExpressionAttributeValues: updateParams.attributeValues,
+        ExpressionAttributeNames: updateParams.attributeNames
     }
-    //
     const result = await updateAsync(params);
-    // create a response
     const response = {
         statusCode: 200,
         body: JSON.stringify(result)

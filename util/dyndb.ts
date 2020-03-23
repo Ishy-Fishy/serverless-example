@@ -9,11 +9,19 @@ import UpdateParam = DynamoDB.UpdateParam;
 
 const dynamoDb = new DynamoDB.DocumentClient()
 
-interface DyndbRetItem {
+interface IDyndbRetItem {
     Item: any
 }
 
-export function putAsync(params: PutParam): Promise<DyndbRetItem> {
+interface IBook {
+    name: string,
+    releaseDate: number,
+    authorName: string
+}
+
+type TMap = { [name: string]: any }
+
+export function putAsync(params: PutParam): Promise<IDyndbRetItem> {
     // write the book to the database
     return new Promise((resolve, reject) => {
         dynamoDb.put(params, (error, result) => {
@@ -29,7 +37,7 @@ export function putAsync(params: PutParam): Promise<DyndbRetItem> {
     })
 }
 
-export function updateAsync(params: UpdateParam): Promise<DyndbRetItem> {
+export function updateAsync(params: UpdateParam): Promise<IDyndbRetItem> {
     // write the book to the database
     return new Promise((resolve, reject) => {
         dynamoDb.update(params, (error, result) => {
@@ -92,4 +100,26 @@ export function listAsync(params: ScanParam) {
             }
         )
     })
+}
+
+export function generateUpdateParametersFromObject(item: IBook): { expressionString: string, attributeValues: TMap, attributeNames: TMap } {
+    let expressionString = '';
+
+    const ExpressionAttributeValues = {}
+
+    const ExpressionAttributeNames = {}
+
+    for (let key in item) {
+        if (item[key]) {
+            //obviously ternary operators are bad, but making a dictionary for just one reserved word is overkill
+            expressionString += ` ${key === 'name' ? "#nm" : key} = :${key},`;
+            ExpressionAttributeValues[`:${key}`] = item[key];
+            if (key === 'name') {
+                ExpressionAttributeNames['#nm'] = 'name'
+            }
+        }
+    }
+    //remove trailing comma
+    expressionString = expressionString.replace(/,\s*$/, "");
+    return {expressionString, attributeValues: ExpressionAttributeValues, attributeNames: ExpressionAttributeNames}
 }

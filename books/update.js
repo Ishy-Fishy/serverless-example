@@ -32,54 +32,23 @@ module.exports.update = (event, context) => __awaiter(this, void 0, void 0, func
         releaseDate: Date.parse(data.releaseDate),
         authorName: data.authorName
     };
-    let updateExprVariables = '';
-    const ExpressionAttributeValues = {};
-    const ExpressionAttributeNames = {};
-    for (let key in item) {
-        if (item[key]) {
-            //obviously ternary operators are bad, but making a dictionary for just one reserved word is overkill
-            updateExprVariables += ` ${key === 'name' ? "#nm" : key} = :${key},`;
-            ExpressionAttributeValues[`:${key}`] = item[key];
-            if (key === 'name') {
-                ExpressionAttributeNames['#nm'] = 'name';
-            }
-        }
-    }
-    //remove trailing comma
-    updateExprVariables = updateExprVariables.replace(/,\s*$/, "");
-    // return {
-    //     statusCode: 200,
-    //     body: updateExprVariables
-    // }
-    if (!updateExprVariables) {
+    const updateParams = dyndb_1.generateUpdateParametersFromObject(item);
+    if (!updateParams.expressionString) {
         return {
             statusCode: 200
         };
     }
-    //
-    // const params = {
-    //     TableName: process.env.DYNAMODB_TABLE,
-    //     Key: {
-    //         uuid: event.pathParameters.bookUuid
-    //     },
-    //     UpdateExpression: `set ${updateExprVariables}`,
-    //     ExpressionAttributeNames: {
-    //         '#nm': "name" // why is "name" a reserved keyword on update but not on insert?
-    //     }
-    // }
     const params = {
         TableName: process.env.DYNAMODB_TABLE,
         Key: {
             uuid: event.pathParameters.bookUuid
         },
         //its 2020, and DynamoDB updates with interpreted string commands instead of a JSON... Couldn't the sdk at least wrap this ugliness?
-        UpdateExpression: `set ${updateExprVariables}`,
-        ExpressionAttributeValues: ExpressionAttributeValues,
-        ExpressionAttributeNames: ExpressionAttributeNames
+        UpdateExpression: `set ${updateParams.expressionString}`,
+        ExpressionAttributeValues: updateParams.attributeValues,
+        ExpressionAttributeNames: updateParams.attributeNames
     };
-    //
     const result = yield dyndb_1.updateAsync(params);
-    // create a response
     const response = {
         statusCode: 200,
         body: JSON.stringify(result)
